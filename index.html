@@ -1,0 +1,517 @@
+<!DOCTYPE html> 
+<html>
+<head>
+<meta charset="utf-8">
+<title>jQuery Mobile Web App</title>
+<link rel="stylesheet" href="themes/MyCustom.min.css" />
+<link rel="stylesheet" href="themes/jquery.mobile.icons.min.css" />
+<!--<link href="jquery-mobile/jquery.mobile.theme-1.0.min.css" rel="stylesheet" type="text/css"/>
+<link href="jquery-mobile/jquery.mobile.structure-1.0.min.css" rel="stylesheet" type="text/css"/>
+-->
+<link rel="stylesheet" href="themes/jquery.mobile.structure-1.4.5.min.css" />
+<!--<script src="jquery-mobile/jquery-1.6.4.min.js" type="text/javascript"></script>
+--><script src="jquery-mobile/jquery.mobile-1.0.min.js" type="text/javascript"></script>
+<script src="themes/jquery.js" type="text/javascript"></script>
+<script src="themes/jquery.mobile-1.4.5.min.js" type="text/javascript"></script>
+<link rel="stylesheet" type="text/css" href="themes/default.css" />
+<link rel="stylesheet" type="text/css" href="themes/component.css" />
+<script src="themes/classie.js"></script>
+<script src="themes/modernizr.custom.js"></script>
+<script type="text/javascript" language="javascript">
+	$(document).ready(function(e) {
+        var menuLeft = document.getElementById('cbp-spmenu-s1');
+		//classie.toggle( showLeft, 'disabled' );
+		$(".SideLeftMenu").click(function(){	
+				if($("#closeme").is(":visible")){ $("#cbp-spmenu-s1").removeClass("cbp-spmenu-open"); $("#closeme").fadeOut(100); }
+				else { $("#cbp-spmenu-s1").addClass("cbp-spmenu-open"); $("#closeme").fadeIn(100); } 
+			});
+		
+		$(document).ajaxStart(function() {
+        	$("#pageLoader").show();
+		});
+		$(document).ajaxComplete(function() {
+			$("#pageLoader").hide();
+		});
+		
+		$("#closeme,.afterClick").click(function() {
+           $("#cbp-spmenu-s1").removeClass("cbp-spmenu-open");
+		   $("#closeme").hide();	
+        });
+		
+		// to Track Cart on Load
+		LoadCartDetail();
+		
+    });
+	
+	$(document).on( "pagecreate", function() {
+			
+		
+		$("#CategoryGrid").html('<div class="ui-block-a"><a href="#DataDynamic" class="ui-bar ui-bar-a ClickCategory" data-corners="false" title=" Navigation " data-value="123" data-role="button" role="button"> Navigation </a></div><div class="ui-block-b"><a href="#DataDynamic" class="ui-bar ui-bar-a" data-corners="false" title=" Navigation " data-role="button" role="button"> Navigation </a></div><div class="ui-block-a"><a href="#DataDynamic" class="ui-bar ui-bar-a" data-corners="false" title=" Navigation " data-role="button" role="button"> Navigation </a></div><div class="ui-block-b"><a href="#DataDynamic" class="ui-bar ui-bar-a" data-corners="false" title=" Navigation " data-role="button" role="button"> Navigation </a></div><div class="ui-block-a"><a href="#DataDynamic" class="ui-bar ui-bar-a" data-corners="false" title=" Navigation " data-role="button" role="button"> Navigation </a></div><div class="ui-block-b"><a href="#DataDynamic" class="ui-bar ui-bar-a" data-corners="false" title=" Navigation " data-role="button" role="button"> Navigation </a></div>');
+		
+		$(".ClickCategory").click(function(){ //alert($(this).data("value"));
+		
+		/*var Res = $.ajax({url:"mypage.php",async:false,cache:false}).responseText;
+		alert(Res);*/
+		PageLoadCart("http://softwebtechno.com/mypage.php","ProductGrid");
+		/* $.ajax({
+			type:'POST',
+			url: "mypage.php",
+			data:{Id: 123},
+			async: false,
+			success:function(d){
+				// Your code.
+				//alert(d);
+				$("#ProductGrid").html(d);
+			},
+			beforeSend: function(){
+				// Code to display spinner
+			},
+			complete: function(){
+				// Code to hide spinner.
+			}
+		});*/
+		GenerateEvent();
+
+			/*$("#ProductGrid").html('<div class="ui-block-a"><a href="#DataDynamic" class="ui-bar ui-bar-a" data-corners="false" title=" Navigation " data-value="123" data-role="button" role="button"> Navigation </a></div><div class="ui-block-b"><a href="#DataDynamic" class="ui-bar ui-bar-a" data-corners="false" title=" Navigation " data-role="button" role="button"> Navigation </a></div><div class="ui-block-a"><a href="#DataDynamic" class="ui-bar ui-bar-a" data-corners="false" title=" Navigation " data-role="button" role="button"> Navigation </a></div><div class="ui-block-b"><a href="#DataDynamic" class="ui-bar ui-bar-a" data-corners="false" title=" Navigation " data-role="button" role="button"> Navigation </a></div><div class="ui-block-a"><a href="#DataDynamic" class="ui-bar ui-bar-a" data-corners="false" title=" Navigation " data-role="button" role="button"> Navigation </a></div><div class="ui-block-b"><a href="#DataDynamic" class="ui-bar ui-bar-a" data-corners="false" title=" Navigation " data-role="button" role="button"> Navigation </a></div>');*/
+		 });
+		 
+		 /*
+		 $.ajax({
+			type:'POST',
+			url: query_url,
+			data:{query: $("#keyword").val()},
+			dataType:'json',
+			async: false,
+			success:function(d){
+				// Your code.
+			},
+			beforeSend: function(){
+				// Code to display spinner
+			},
+			complete: function(){
+				// Code to hide spinner.
+			}
+		});
+		 */
+				
+		$(".show-page-loading-msg").click(function(e) {
+             var $this = $( this ),
+		        theme = $this.jqmData( "theme" ) || $.mobile.loader.prototype.options.theme,
+		        msgText = $this.jqmData( "msgtext" ) || $.mobile.loader.prototype.options.text,
+		        textVisible = $this.jqmData( "textvisible" ) || $.mobile.loader.prototype.options.textVisible,
+		        textonly = !!$this.jqmData( "textonly" );
+		        html = $this.jqmData( "html" ) || "";
+		    $.mobile.loading( "show", {
+            text: msgText,
+            textVisible: textVisible,
+            theme: theme,
+            textonly: textonly,
+            html: html
+        });
+	});
+});
+
+function PageLoadCart(URL,DivId,Yes)
+{
+	$.ajax({
+			type:'POST',
+			url: URL,
+			data:{cartItems:0},
+			async: false,
+			success:function(d){
+				// Your code.
+				$("#"+DivId).html(d);
+				//alert(d);
+				//$("#ProductGrid").html(d);
+			},
+			beforeSend: function(){
+				// Code to display spinner
+			},
+			complete: function(){
+				// Code to hide spinner.
+			}
+		});
+		if(Yes == 1)
+		{
+			FillCart();
+		}
+}
+
+/* Cart Function */
+function FillCart()
+{
+	$(".IncreseQty1").click(function(e) {
+			   var ItemId = $(this).data("itemvalue");
+			   var Count = $("#Count"+ItemId).html();
+			   var Cost = $("#cost"+ItemId).data("value");
+			   $("#cost"+ItemId).html("Rs. "+(parseFloat(Cost)*(parseFloat(Count)+1)));
+			   $("#Count"+ItemId).html(parseInt(Count)+1);
+			   getShopBottomCart(ItemId,Cost,1);
+			   LoadCartDetail();
+        });
+	$(".DecreseQty1").click(function(e) {
+           var ItemId = $(this).data("itemvalue");
+		   var Count = $("#Count"+ItemId).html();
+		   if(Count>0)
+		   {
+			    var Cost = $("#cost"+ItemId).data("value");
+		   		$("#cost"+ItemId).html("Rs. "+(parseFloat(Cost)*(parseFloat(Count)-1)));
+		   		$("#Count"+ItemId).html((parseInt(Count)-1));
+				getShopBottomCart(ItemId,Cost,-1);
+		   		LoadCartDetail();
+		   }
+        });
+}
+
+function getShopBottomCart(dataitemId,dataprice,dataqty)
+{
+	 $.ajax({
+			type:'POST',
+			url: "http://softwebtechno.com/addtocart.php",
+			data:{cartItems:1,itemId:dataitemId,price:dataprice,qty:dataqty},
+			async: false,
+			success:function(d){
+				// Your code.
+				//alert(d);
+				//$("#ProductGrid").html(d);
+			},
+			beforeSend: function(){
+				// Code to display spinner
+			},
+			complete: function(){
+				// Code to hide spinner.
+			}
+		});
+}
+
+function LoadCartDetail()
+{
+	PageLoadCart("http://softwebtechno.com/pageLoadCart.php","goToshopcart",0);
+	PageLoadCart("http://softwebtechno.com/pageLoadCart.php","goToshopcart1",0);
+	PageLoadCart("http://softwebtechno.com/mycart.php","shoppingCart",1);
+}
+
+function GenerateEvent()
+{
+	$(".IncreseQty").click(function(e) {
+			   var ItemId = $(this).data("itemvalue");
+			   var Count = $("#Count"+ItemId).html();
+			   var Cost = $("#cost"+ItemId).data("value");
+			   $("#cost"+ItemId).html("Rs. "+(parseFloat(Cost)*(parseFloat(Count)+1)));
+			   $("#Count"+ItemId).html(parseInt(Count)+1);
+			   getShopBottomCart(ItemId,Cost,1);
+			   LoadCartDetail();
+        });
+	$(".DecreseQty").click(function(e) {
+           var ItemId = $(this).data("itemvalue");
+		   var Count = $("#Count"+ItemId).html();
+		   if(Count>0)
+		   {
+			    var Cost = $("#cost"+ItemId).data("value");
+		   		$("#cost"+ItemId).html("Rs. "+(parseFloat(Cost)*(parseFloat(Count)-1)));
+		   		$("#Count"+ItemId).html((parseInt(Count)-1));
+				getShopBottomCart(ItemId,Cost,-1);
+		   		LoadCartDetail();
+		   }
+        });
+}
+</script>
+</head> 
+<body> 
+<!-- Navigation Bar -->
+		<nav class="cbp-spmenu cbp-spmenu-vertical cbp-spmenu-left" id="cbp-spmenu-s1">
+			<h3 class=" ui-header ui-bar-a">Menu <a class="ui-btn-right ui-btn-corner-all ui-btn ui-icon-bars ui-btn-icon-notext ui-shadow SideLeftMenu" title=" Navigation " data-form="ui-icon" data-role="button" role="button"> Navigation </a></h3>
+			<a class="afterClick" href="#dynamiccategory">Home</a>
+			<a class="afterClick" href="#loginpage">Login</a>
+			<a href="#">Zucchini garlic</a>
+			<a href="#">Catsear azuki bean</a>
+			<a href="#">Dandelion bunya</a>
+			<a href="#">Rutabaga</a>
+		</nav>
+        <div id="pageLoader" style="z-index:8888; position:fixed; left:45%; top:45%; display:none;"><img src="icon.png" /></div>
+        <div style="width:100%; height:100%; position:fixed; display:none; z-index:2222; opacity:0.5; background:#000;" id="closeme">&nbsp;</div>
+<!-- End of Navigation -->
+
+<div data-role="page" class="jqm-demos" id="page">
+	<div class="preview ui-shadow swatch">
+	<div class="ui-header ui-bar-a" data-swatch="a" data-position="fixed" data-theme="a" data-form="ui-bar-a" data-role="header" role="banner">
+		<a class="ui-btn-left ui-btn-corner-all ui-btn ui-icon-bars ui-btn-icon-notext ui-shadow SideLeftMenu" title=" Navigation " data-form="ui-icon" data-role="button" role="button"> Navigation </a>
+        <h1 class="ui-title" tabindex="0" role="heading" aria-level="1">Softweb Technologies</h1>
+        <a class="ui-btn-right ui-btn-corner-all ui-btn ui-icon-grid ui-btn-icon-notext ui-shadow" title=" Navigation " data-form="ui-icon" data-role="button" role="button"> Navigation </a>
+	</div>
+	</div>
+    <div class="ui-content ui-page-theme-a" data-form="ui-page-theme-a" data-theme="a" role="main">
+
+    <div data-theme="a" data-form="ui-body-a" class="ui-body ui-body-a ui-corner-all">
+			<h2>Welcome to Softweb Technologies</h2>
+			<p>
+				<img src="http://softwebtechno.com/images/S_logo.png" style="float:left; padding:20px; width:40%; height:40%;"  />
+                Softweb Technologies is an ISO 9001:2008 Certified Company located in India and Canada with our core activities related into web application development, ecommerce development as well as software development since past 5 years. We have a highly skilled team of 25+ skilled developers providing our remarkable service. 
+			</p>
+            <p>
+            The main focus of Softweb Technologies is on outsourcing, consulting, application development and maintenance. We have completed 5 golden years by providing outstanding services globally in the IT field. We deliver the best possible IT solution blended with our experienced and skilled team of programmers with the best working ambience.
+           	</p>
+            <a href="#dynamiccategory" class=" ui-btn ui-btn-a ui-icon-arrow-r ui-btn-icon-right ui-shadow ui-corner-all" data-transition="slide">View More Detail</a>.
+		</div>
+    </div>
+	<div data-role="footer" div class="ui-header ui-bar-a" data-swatch="a" data-position="fixed" data-theme="a" data-form="ui-bar-a" role="banner">
+		<a class="ui-btn-left ui-btn-corner-all ui-btn ui-icon-delete ui-btn-icon-notext ui-shadow" title=" Close " data-form="ui-icon" data-role="button" role="button"> Home </a>
+        <br>&nbsp;<br>
+        <a class="ui-btn-right ui-btn-corner-all ui-btn ui-icon-arrow-r ui-btn-icon-right ui-shadow" title=" Login Now " data-form="ui-icon" data-role="button" role="button"> Login </a>
+	</div>
+</div>
+
+<!-- After Enter in Page -->
+<div data-role="page" class="jqm-demos" id="dynamiccategory" data-quicklinks="true">
+	<div class="preview ui-shadow swatch">
+	<div class="ui-header ui-bar-a" data-swatch="a" data-theme="a" data-form="ui-bar-a" data-role="header" role="banner">
+		<a class="ui-btn-left ui-btn-corner-all ui-btn ui-icon-bars ui-btn-icon-notext ui-shadow SideLeftMenu" title=" Navigation " data-form="ui-icon" data-role="button" role="button"> Navigation </a>
+		<h1 class="ui-title" tabindex="0" role="heading" aria-level="1">Softweb Technologies</h1>
+		<a class="ui-btn-right ui-btn-corner-all ui-btn ui-icon-bars ui-btn-icon-notext ui-shadow" title=" Home " data-form="ui-icon" data-role="button" role="button"> Navigation </a>
+	</div>
+	</div>
+	
+   <div class="ui-grid-a" id="CategoryGrid">
+      
+	</div><!-- /grid-a -->
+    
+   <div data-role="footer" div class="ui-header ui-bar-a" data-swatch="a" data-position="fixed" data-theme="a" data-form="ui-bar-a" role="banner">
+		<a class="ui-btn-left ui-btn-corner-all ui-btn ui-icon-delete ui-btn-icon-notext ui-shadow" title=" Close " data-form="ui-icon" data-role="button" role="button"> Close </a>
+        <br>&nbsp;<br>
+        <a class="ui-btn-right ui-btn-corner-all ui-btn ui-icon-arrow-r ui-btn-icon-right ui-shadow" title=" Login Now " data-form="ui-icon" data-role="button" role="button"> Login </a>
+	</div>
+</div>
+<!-- /page -->
+
+<!-- After Enter in Page -->
+<div data-role="page" class="jqm-demos" id="DataDynamic" data-quicklinks="true">
+	<div class="preview ui-shadow swatch">
+	<div class="ui-header ui-bar-a" data-swatch="a" data-theme="a" data-position="fixed" data-form="ui-bar-a" data-role="header" role="banner">
+		<a class="ui-btn-left ui-btn-corner-all ui-btn ui-icon-bars ui-btn-icon-notext ui-shadow SideLeftMenu" title=" Navigation " data-form="ui-icon" data-role="button" role="button"> Navigation </a>
+		<h1 class="ui-title" tabindex="0" role="heading" aria-level="1">Softweb Technologies</h1>
+		<a class="ui-btn-right ui-btn-corner-all ui-btn ui-icon-home ui-btn-icon-notext ui-shadow" title=" Home " data-form="ui-icon" href="#dynamiccategory" data-role="button" role="button" data-transition="pop"> Home </a>
+	</div>
+	</div>
+    
+     <div class="Ui-customeClass ui-bar ui-bar-a NoPadding" style="padding-left:1%;" id="ProductGrid">
+     </div>
+
+    <div data-role="footer"  data-position="fixed">
+		<a class="ui-btn-bottom ui-btn-corner-all ui-btn ui-icon-shop ui-btn-icon-left ui-shadow goToshopcart" title=" go to Cart " data-form="ui-icon" data-role="button" role="button" href="#shopcart" id="goToshopcart" data-transition="pop"> No Item Selected </a>
+        <a class="ui-btn-center ui-btn-corner-all ui-btn ui-icon-home ui-btn-icon-notext ui-shadow" title=" Close " data-form="ui-icon" data-role="button" role="button" href="#dynamiccategory" data-transition="pop" style="position:absolute; left:50%"> Home </a>
+        <a class="ui-btn-right ui-btn-corner-all ui-btn ui-icon-arrow-r ui-btn-icon-right ui-shadow goToshopcart" title=" Checkout Now " data-form="ui-icon" data-role="button"  href="#shopcart" role="button"> CheckOut </a>
+	</div>
+</div>
+<!-- /page -->
+
+<!-- After Enter in Page Shopping Cart -->
+<div data-role="page" class="jqm-demos" id="shopcart" data-quicklinks="true">
+	<div class="preview ui-shadow swatch">
+	<div  data-position="fixed" class="ui-header ui-bar-a" data-swatch="a" data-theme="a" data-form="ui-bar-a" data-role="header" role="banner">
+		<a class="ui-btn-left ui-btn-corner-all ui-btn ui-icon-bars ui-btn-icon-notext ui-shadow SideLeftMenu" title=" Navigation " data-form="ui-icon" data-role="button" role="button"> Navigation </a>
+		<h1 class="ui-title" tabindex="0" role="heading" aria-level="1">Softweb Technologies</h1>
+		<a class="ui-btn-right ui-btn-corner-all ui-btn ui-icon-home ui-btn-icon-notext ui-shadow" title=" Login " data-form="ui-icon" data-role="button" href="#popupLogin" data-rel="popup" data-position-to="window" role="button"> Login </a>
+        <div data-role="popup" id="popupLogin" data-theme="a" class="ui-corner-all">
+        <form>
+            <div style="padding:10px 20px;">
+                <h3>Please sign in</h3>
+                <label for="un" class="ui-hidden-accessible">Username:</label>
+                <input type="text" name="user" id="un" value="" placeholder="username" data-theme="a">
+                <label for="pw" class="ui-hidden-accessible">Password:</label>
+                <input type="password" name="pass" id="pw" value="" placeholder="password" data-theme="a">
+                <button type="submit" class="ui-btn ui-corner-all ui-shadow ui-btn-b ui-btn-icon-left ui-icon-check">Sign in</button>
+            </div>
+        </form>
+   	 </div>
+   <div class="Ui-customeClass ui-bar ui-bar-a NoPadding" data-position="fixed" style="padding-left:1%;">
+        <div class="panel100 productEffect">
+   			 <div class="panel50">
+            <a href="#DataDynamic" class="ui-bar ui-bar-a NoPadding NoBorder fontLeft MyBackground ui-btn ui-icon-shop ui-btn-icon-left" data-corners="false" title=" Navigation " id="goToshopcart1" data-value="123" role="button">
+            	 No Item Selected 
+             </a>
+             </div>
+            <div class="panel50">
+            	 <a class="ui-bar ui-bar-a NoPadding NoBorder MyBackground ui-btn ui-icon-arrow-r ui-btn-icon-right ui-shadow LoginCheker" data-corners="false" style="float:right;" title=" Navigation " id="goToshopcart1" data-value="123" role="button">
+            	 Order Now 
+             	</a>
+            </div>
+        </div>
+	</div><!-- /grid-a -->
+    </div>
+    </div>
+    
+	
+   	<div class="Ui-customeClass ui-bar ui-bar-a NoPadding" style="padding-left:1%;" id="shoppingCart">
+      
+	</div><!-- /grid-a -->   
+    
+    <div data-role="popup" id="popupDialog" data-overlay-theme="b" data-theme="b" data-dismissible="false" style="max-width:400px;">
+    <div data-role="header" data-theme="a">
+    <h1>Sure to Remove Item(s) ?</h1>
+    </div>
+    <div role="main" class="ui-content">
+        <h3 class="ui-title">Are you sure you want to delete Item(s)?</h3>
+    	<p>This action cannot be undone.</p>
+        <a href="#" class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-btn-b" data-rel="back">Cancel</a>
+        <a href="#" class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-btn-b" data-rel="back" data-transition="flow">Delete</a>
+    </div>
+</div>
+    
+    <div data-role="footer"  data-position="fixed">
+    	<a class="ui-btn-bottom ui-btn-corner-all ui-btn ui-icon-arrow-l ui-btn-icon-left ui-shadow" title=" Back " data-form="ui-icon" data-role="button" role="button" href="#DataDynamic"> Shop </a>
+		<a class="ui-btn-center ui-btn-corner-all ui-btn ui-icon-home ui-btn-icon-notext ui-shadow" title=" Close " data-form="ui-icon" data-role="button" role="button" href="#dynamiccategory" data-transition="pop" style="position:absolute; left:50%"> Home </a>
+        <a class="ui-btn-right ui-btn-corner-all ui-btn ui-icon-arrow-r ui-btn-icon-right ui-shadow" title=" Login Now " data-form="ui-icon" data-role="button" role="button"> Check Out </a>
+	</div>
+</div><!-- /page -->
+
+<!-- After Enter in Login Page -->
+<div data-role="page" class="jqm-demos" id="loginpage" data-quicklinks="true">
+	<div class="preview ui-shadow swatch">
+	<div class="ui-header ui-bar-a" data-position="fixed" data-swatch="a" data-theme="a" data-form="ui-bar-a" data-role="header" role="banner">
+		<a class="ui-btn-left ui-btn-corner-all ui-btn ui-icon-bars ui-btn-icon-notext ui-shadow SideLeftMenu" title=" Navigation " data-form="ui-icon" data-role="button" role="button"> Navigation </a>
+		<h1 class="ui-title" tabindex="0" role="heading" aria-level="1">Softweb Technologies</h1>
+		<a class="ui-btn-right ui-btn-corner-all ui-btn ui-icon-bars ui-btn-icon-notext ui-shadow" title=" Home " data-form="ui-icon" data-role="button" role="button"> Navigation </a>
+	</div>
+	</div>
+	<div style="padding:0px 2em 0px 2em">
+     <form>
+            <div>
+                <h3>Please Login in</h3>
+                <hr>
+                <label for="un" class="ui-hidden-accessible">Username:</label>
+                <input type="text" name="user" id="un" value="" placeholder="username" data-theme="a">
+                <label for="pw" class="ui-hidden-accessible">Password:</label>
+                <input type="password" name="pass" id="pw" value="" placeholder="password" data-theme="a">
+                <button type="submit" class="ui-btn ui-corner-all ui-shadow ui-btn-b ui-btn-icon-left ui-icon-check">Sign in</button>
+            </div>
+           <a style="float:right;" data-rel="popup" data-position-to="window" href="#popupforget">forget password ?</a>
+           <div style="clear:both"></div>
+        </form>
+        
+        <div data-role="popup" id="popupforget" data-theme="a" class="ui-corner-all">
+        	<a href="#" data-rel="back" class="ui-btn ui-corner-all ui-shadow ui-btn-a ui-icon-delete ui-btn-icon-notext ui-btn-right">Close</a>
+            <div style="padding:10px 20px;">
+                <h3>Retrive your password</h3>
+                <label for="FemailId" class="ui-hidden-accessible">Email Id:</label>
+                <input type="email" name="FemailId" id="FemailId" required value="" placeholder="Register EmailId" data-theme="a">
+                <button type="submit" class="ui-btn ui-corner-all ui-shadow ui-btn-b ui-btn-icon-left ui-icon-check">Request Now</button>
+            </div>
+   	 </div>
+        
+        <hr>
+    	<div class="Ui-customeClass">
+            <div class="panel50">Need not to password <a class="ui-btn-corner-all ui-btn-icon-left  ui-btn ui-icon-star ui-shadow" title=" Close " data-form="ui-icon" data-form="ui-icon" role="button" href="#guestpage"> Guest User </a> </div>
+            <div class="panel50">
+            Get Login Details for Return
+            <a class="ui-btn-corner-all ui-btn-icon-right  ui-btn ui-icon-star ui-shadow" href="#registerpage" title=" Close " data-form="ui-icon" data-form="ui-icon" role="button"> New User </a></div>
+        </div>
+    </div>
+   <div data-role="footer" div class="ui-header ui-bar-a" data-swatch="a" data-position="fixed" data-theme="a" data-form="ui-bar-a" role="banner">
+		<a class="ui-btn-left ui-btn-corner-all ui-btn ui-icon-delete ui-btn-icon-notext ui-shadow" title=" Close " data-form="ui-icon" data-role="button" role="button"> Close </a>
+        <br>&nbsp;<br>
+        <a class="ui-btn-right ui-btn-corner-all ui-btn ui-icon-arrow-r ui-btn-icon-right ui-shadow" title=" New User " href="#registerpage" data-form="ui-icon" data-role="button" role="button"> New User </a>
+	</div>
+</div>
+<!-- /page -->
+
+<!-- After Enter in Register Page -->
+<div data-role="page" class="jqm-demos" id="registerpage" data-quicklinks="true">
+	<div class="preview ui-shadow swatch">
+	<div class="ui-header ui-bar-a" data-position="fixed" data-swatch="a" data-theme="a" data-form="ui-bar-a" data-role="header" role="banner">
+		<a class="ui-btn-left ui-btn-corner-all ui-btn ui-icon-bars ui-btn-icon-notext ui-shadow SideLeftMenu" title=" Navigation " data-form="ui-icon" data-role="button" role="button"> Navigation </a>
+		<h1 class="ui-title" tabindex="0" role="heading" aria-level="1">Softweb Technologies</h1>
+		<a class="ui-btn-right ui-btn-corner-all ui-btn ui-icon-bars ui-btn-icon-notext ui-shadow" title=" Home " data-form="ui-icon" data-role="button" role="button"> Navigation </a>
+	</div>
+	</div>
+	<div style="padding:0px 2em 0px 2em">
+     <form>
+            <div>
+                <h3>New User Registration</h3>
+                <hr>
+                <label for="Rfullname" class="ui-hidden-accessible">Full Name:</label>
+                <input type="text" name="Rfullname" id="Rfullname" value="" placeholder="Full Name" required pattern="[a-zA-Z ]+" data-theme="a">
+                <label for="RContact" class="ui-hidden-accessible">Contact:</label>
+                <input type="text" name="RContact" id="RContact" value="" placeholder="Contact" required pattern="[0-9]+" data-theme="a">
+                <label for="Remail" class="ui-hidden-accessible">Email Id:</label>
+                <input type="email" name="Remail" id="Remail" value="" placeholder="Email Id" data-theme="a">
+                 <label for="Raddress" class="ui-hidden-accessible">Address:</label>
+                <textarea name="Raddress" id="Raddress" value="" placeholder="Full Address" data-theme="a" required></textarea>
+                  <label for="RCity" class="ui-hidden-accessible">City:</label>
+                <input type="text" name="RCity" id="RCity" value="" placeholder="Current City" data-theme="a" required>
+                 <label for="RArea" class="ui-hidden-accessible">Area:</label>
+                <input type="text" name="RArea" id="RArea" value="" placeholder="LandMark Area" data-theme="a" required>
+                  <label for="RArea" class="ui-hidden-accessible">Zip Code:</label>
+                <input type="text" name="RArea" id="RArea" value="" placeholder="Zip Code" data-theme="a" required pattern="[0-9]{6}">
+                <label for="Rusername" class="ui-hidden-accessible">Username:</label>
+                <input type="text" name="Rusername" id="Rusername" value="" placeholder="User Name" required pattern="[A-Za-z0-9_.]+" data-theme="a">
+                <label for="Rpassword" class="ui-hidden-accessible">Password:</label>
+                <input type="password" name="Rpassword" id="Rpassword" value="" placeholder="Password" required data-theme="a">
+                <button type="submit" class="ui-btn ui-corner-all ui-shadow ui-btn-b ui-btn-icon-left ui-icon-check">Register Now</button>
+            </div>
+        </form>
+        <hr>
+    	<div class="Ui-customeClass">
+            <div class="panel50">Need not to password <a class="ui-btn-corner-all ui-btn-icon-left  ui-btn ui-icon-star ui-shadow" title=" Close " data-form="ui-icon" data-form="ui-icon" role="button" href="#guestpage"> Guest User </a> </div>
+            <div class="panel50">
+            Click to Back Login 
+            <a class="ui-btn-corner-all ui-btn-icon-right  ui-btn ui-icon-star ui-shadow" title=" Close " data-form="ui-icon" href="#loginpage" data-form="ui-icon" role="button"> Back to Login </a></div>
+        </div>
+    </div>
+   <div data-role="footer" div class="ui-header ui-bar-a" data-swatch="a" data-position="fixed" data-theme="a" data-form="ui-bar-a" role="banner">
+		<a class="ui-btn-left ui-btn-corner-all ui-btn ui-icon-delete ui-btn-icon-notext ui-shadow" title=" Close " data-form="ui-icon" data-role="button" role="button"> Close </a>
+        <br>&nbsp;<br>
+        <a class="ui-btn-right ui-btn-corner-all ui-btn ui-icon-arrow-r ui-btn-icon-right ui-shadow" title=" Login Now " data-form="ui-icon" data-role="button" role="button"> New User </a>
+	</div>
+</div>
+<!-- /page -->
+
+<!-- After Enter in Register Page -->
+<div data-role="page" class="jqm-demos" id="guestpage" data-quicklinks="true">
+	<div class="preview ui-shadow swatch">
+	<div class="ui-header ui-bar-a" data-position="fixed" data-swatch="a" data-theme="a" data-form="ui-bar-a" data-role="header" role="banner">
+		<a class="ui-btn-left ui-btn-corner-all ui-btn ui-icon-bars ui-btn-icon-notext ui-shadow SideLeftMenu" title=" Navigation " data-form="ui-icon" data-role="button" role="button"> Navigation </a>
+		<h1 class="ui-title" tabindex="0" role="heading" aria-level="1">Softweb Technologies</h1>
+		<a class="ui-btn-right ui-btn-corner-all ui-btn ui-icon-bars ui-btn-icon-notext ui-shadow" title=" Home " data-form="ui-icon" data-role="button" role="button"> Navigation </a>
+	</div>
+	</div>
+	<div style="padding:0px 2em 0px 2em">
+     <form>
+            <div>
+                <h3>New User Registration</h3>
+                <hr>
+                <label for="Rfullname" class="ui-hidden-accessible">Full Name:</label>
+                <input type="text" name="Rfullname" id="Rfullname" value="" placeholder="Full Name" required pattern="[a-zA-Z ]+" data-theme="a">
+                <label for="RContact" class="ui-hidden-accessible">Contact:</label>
+                <input type="text" name="RContact" id="RContact" value="" placeholder="Contact" required pattern="[0-9]+" data-theme="a">
+                <label for="Remail" class="ui-hidden-accessible">Email Id:</label>
+                <input type="email" name="Remail" id="Remail" value="" placeholder="Email Id" data-theme="a">
+                 <label for="Raddress" class="ui-hidden-accessible">Address:</label>
+                <textarea name="Raddress" id="Raddress" value="" placeholder="Full Address" data-theme="a" required></textarea>
+                  <label for="RCity" class="ui-hidden-accessible">City:</label>
+                <input type="text" name="RCity" id="RCity" value="" placeholder="Current City" data-theme="a" required>
+                 <label for="RArea" class="ui-hidden-accessible">Area:</label>
+                <input type="text" name="RArea" id="RArea" value="" placeholder="LandMark Area" data-theme="a" required>
+                  <label for="RArea" class="ui-hidden-accessible">Zip Code:</label>
+                <input type="text" name="RArea" id="RArea" value="" placeholder="Zip Code" data-theme="a" required pattern="[0-9]{6}">
+                <button type="submit" class="ui-btn ui-corner-all ui-shadow ui-btn-b ui-btn-icon-left ui-icon-check">Save Now</button>
+            </div>
+        </form>
+        <hr>
+    	<div class="Ui-customeClass">
+            <div class="panel50"> Get Login Details for Return <a class="ui-btn-corner-all ui-btn-icon-left  ui-btn ui-icon-star ui-shadow" title=" Close " data-form="ui-icon" data-form="ui-icon" role="button" href="#registerpage"> User Register </a> </div>
+            <div class="panel50">
+            Click to Back Login 
+            <a class="ui-btn-corner-all ui-btn-icon-right  ui-btn ui-icon-star ui-shadow" title=" Close " data-form="ui-icon" href="#loginpage" data-form="ui-icon" role="button"> Back to Login </a></div>
+        </div>
+    </div>
+   <div data-role="footer" div class="ui-header ui-bar-a" data-swatch="a" data-position="fixed" data-theme="a" data-form="ui-bar-a" role="banner">
+		<a class="ui-btn-left ui-btn-corner-all ui-btn ui-icon-delete ui-btn-icon-notext ui-shadow" title=" Close " data-form="ui-icon" data-role="button" role="button"> Close </a>
+        <br>&nbsp;<br>
+        <a class="ui-btn-right ui-btn-corner-all ui-btn ui-icon-arrow-r ui-btn-icon-right ui-shadow" title=" Login Now " data-form="ui-icon" data-role="button" role="button"> New User </a>
+	</div>
+</div>
+<!-- /page -->
+
+
+</body>
+</html>
